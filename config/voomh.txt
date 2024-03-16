@@ -1,0 +1,22 @@
+ Usage: voom [flags] [file(s)..]
+   or:  voom [flags] -               read text from stdin
+   or:  voom [flags] -t tag          edit file where tag is defined
+      
+flags:
+   +                Start at end of file
+  -help             displays all commands Voom takes
+  -h                same as -help
+  --version         Print version information and exit
+  -D                Debugging mode
+  -T                Text mode(default)
+  -B                Binary mode
+  -R                read only mode(view mode);
+
+usage Example:
+  voom              opens voom with no arguments
+  voom <file>       opens the file in voom text editor
+  voom -r <file>    opens a file with read-only option
+  voom -w <file>    opens f
+
+  **If the file provided as argument doesn`t exist in the current
+    directory, voom creates a new file with the specified name.
