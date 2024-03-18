@@ -13,17 +13,17 @@ int startVoom(Window *main_win) {
     int d = 2;
     int c = 0;
 
-    wattron(workplace_win, A_BOLD | COLOR_PAIR(6));
+    wattron(workplace_win, A_BOLD | COLOR_PAIR(9));
     while (c != 5) {
         mvwprintw(workplace_win, d, a, "%s", voom[c]);
         c++;
         d++;
     }
-    wattroff(workplace_win, A_BOLD | COLOR_PAIR(6));
+    wattroff(workplace_win, A_BOLD | COLOR_PAIR(9));
 
-    wattron(workplace_win, COLOR_PAIR(3));
+    wattron(workplace_win, COLOR_PAIR(11));
     wprintw(workplace_win, "..Editor");
-    wattroff(workplace_win, COLOR_PAIR(3));
+    wattroff(workplace_win, COLOR_PAIR(11));
 
     d++;
     int e = (x / 2) - 6;
@@ -36,22 +36,22 @@ int startVoom(Window *main_win) {
     d += 2;
     e = (x / 2) - 13;
 
-    wattron(workplace_win, A_BOLD | COLOR_PAIR(6));
+    wattron(workplace_win, A_BOLD | COLOR_PAIR(9));
     mvwprintw(workplace_win, d, e, "#)Author :");
-    wattroff(workplace_win, A_BOLD | COLOR_PAIR(6));
+    wattroff(workplace_win, A_BOLD | COLOR_PAIR(9));
 
-    wattron(workplace_win, COLOR_PAIR(4));
+    wattron(workplace_win, COLOR_PAIR(10));
     wprintw(workplace_win, " Edwin_ignas\n");
-    wattroff(workplace_win, COLOR_PAIR(4));
+    wattroff(workplace_win, COLOR_PAIR(10));
 
     d++;
-    wattron(workplace_win, A_BOLD | COLOR_PAIR(6));
+    wattron(workplace_win, A_BOLD | COLOR_PAIR(9));
     mvwprintw(workplace_win, d, e, "#)Website :");
-    wattroff(workplace_win, A_BOLD | COLOR_PAIR(6));
+    wattroff(workplace_win, A_BOLD | COLOR_PAIR(9));
 
-    wattron(workplace_win, COLOR_PAIR(4));
+    wattron(workplace_win, COLOR_PAIR(10));
     wprintw(workplace_win, "Edwinignas.com\n");
-    wattroff(workplace_win, COLOR_PAIR(4));
+    wattroff(workplace_win, COLOR_PAIR(10));
 
     wrefresh(workplace_win);
     wgetch(workplace_win);
@@ -59,32 +59,28 @@ int startVoom(Window *main_win) {
 }
 
 void close_subwins(Window *window) {
-    if (window->has_subs) {
-        for (int i = 0; i < window->num_subs; i++) {
-            delwin(window->subs[i]->window);
-        }
-        free(window->subs);
+    for (int i = 0; i < window->num_subs; i++) {
+        delwin(window->subs[i]->window);
+        free(window->subs[i]);
     }
+    free(window->subs);
 }
 
 void terminal_stop() {
-    close_subwins(&windows_info[TITLE]);
-    delwin(windows_info[TITLE].window);
+    int win_num = 5;
+    if(cmd_info->display_line_numbers)win_num++;
 
-    close_subwins(&windows_info[STATUS]);
-    delwin(windows_info[STATUS].window);
-
-    close_subwins(&windows_info[CMD]);
-    delwin(windows_info[MAIN].window);
-
-    if (!cmd_info->display_line_numbers)
-        delwin(windows_info[SIDE].window);
-
-    delwin(windows_info[MAIN].window);
-    delwin(windows_info[SCROOL].window);
-
+    for (int i = 0; i < win_num; i++) {
+        if (windows_info[i].has_subs) {
+            close_subwins(&windows_info[i]);
+        }
+        if (windows_info[i].window != NULL) {
+            delwin(windows_info[i].window);
+        }
+    }
     endwin();
 }
+
 
 PRIVATE int terminal_start(){
     if (initscr() == NULL){
@@ -97,39 +93,6 @@ PRIVATE int terminal_start(){
     keypad(stdscr, TRUE);
     return EXIT_SUCCESS;
 }
-
-// void copy_structs(config_t *dest, const config_t *src) {
-//     if (dest->tab_width == 0) dest->tab_width = src->tab_width;
-//     if (dest->text_autowrap == 0) dest->text_autowrap = src->text_autowrap;
-//     if (dest->display_encoding == 0) dest->display_encoding = src->display_encoding;
-//     if (dest->display_lang_server == 0) dest->display_lang_server = src->display_lang_server;
-//     if (dest->display_tabspace == 0) dest->display_tabspace = src->display_tabspace;
-//     if (dest->display_line_numbers == 0) dest->display_line_numbers = src->display_line_numbers;
-//     if (dest->display_cursor_position == 0) dest->display_cursor_position = src->display_cursor_position;
-//     if (dest->indent_using_spaces == 0) dest->indent_using_spaces = src->indent_using_spaces;
-//     if (dest->highlight_current_line == 0) dest->highlight_current_line = src->highlight_current_line;
-//     if (dest->enable_spellcheck == 0) dest->enable_spellcheck = src->enable_spellcheck;
-//     if (dest->enable_autocorrect == 0) dest->enable_autocorrect = src->enable_autocorrect;
-//     if (dest->enable_mouse == 0) dest->enable_mouse = src->enable_mouse;
-//     if (dest->display_time == 0) dest->display_time = src->display_time;
-
-//     if (strlen(dest->title_bg) == 0) strcpy(dest->title_bg, src->title_bg);
-//     if (strlen(dest->title_fg) == 0) strcpy(dest->title_fg, src->title_fg);
-//     if (strlen(dest->title_bg_voom) == 0) strcpy(dest->title_bg_voom, src->title_bg_voom);
-//     if (strlen(dest->title_fg_voom) == 0) strcpy(dest->title_fg_voom, src->title_fg_voom);
-//     if (strlen(dest->side_bg) == 0) strcpy(dest->side_bg, src->side_bg);
-//     if (strlen(dest->side_fg) == 0) strcpy(dest->side_fg, src->side_fg);
-//     if (strlen(dest->command_bg) == 0) strcpy(dest->command_bg, src->command_bg);
-//     if (strlen(dest->command_fg) == 0) strcpy(dest->command_fg, src->command_fg);
-//     if (strlen(dest->command_bg_cmd) == 0) strcpy(dest->command_bg_cmd, src->command_bg_cmd);
-//     if (strlen(dest->command_fg_cmd) == 0) strcpy(dest->command_fg_cmd, src->command_fg_cmd);
-//     if (strlen(dest->main_bg) == 0) strcpy(dest->main_bg, src->main_bg);
-//     if (strlen(dest->main_fg) == 0) strcpy(dest->main_fg, src->main_fg);
-//     if (strlen(dest->status_bg) == 0) strcpy(dest->status_bg, src->status_bg);
-//     if (strlen(dest->status_fg) == 0) strcpy(dest->status_fg, src->status_fg);
-//     if (strlen(dest->status_bg_status) == 0) strcpy(dest->status_bg_status, src->status_bg_status);
-//     if (strlen(dest->status_fg_status) == 0) strcpy(dest->status_fg_status, src->status_fg_status);
-// }
 
 void copy_structs(config_t *dest, const config_t *src) {
   
@@ -271,20 +234,16 @@ void setup_pair(uint8_t pair, char *bg, char *fg) {
   if (!extract_colors(bg, &bg_red, &bg_green, &bg_blue) ||
       !extract_colors(fg, &fg_red, &fg_green, &fg_blue)) {
     fprintf(stderr, "Failed to extract colors from strings\n");
-    return; // Or handle the error appropriately
+    return;
   }
 
   // Initialize colors and pair:
   init_color(COLOR_BLACK, bg_red, bg_green, bg_blue);
   init_color(COLOR_YELLOW, fg_red, fg_green, fg_blue);
   init_pair(pair, COLOR_YELLOW, COLOR_BLACK);
-//you confused? yeah, this is a dirty trick that gives 64 * 64 colours in ncurses
-// tested on ubuntu and arch and works well. its unstable and may not work on your system.
-  //init_color(COLOR_BLACK, 0, 0, 0);
-  //init_color(COLOR_YELLOW, 255, 255, 0);
 }
 
-void setup_color_display(config_t *main_config){
+void setup_color_display(){
 if(has_colors()){
     start_color();
     cmd_info->has_colors = true;
@@ -298,10 +257,13 @@ if(has_colors()){
         init_pair(2,COLOR_WHITE, COLOR_GREEN); //workplace_bg_voom
         init_pair(3,COLOR_BLUE,COLOR_CYAN); // side/numbers bar
         init_pair(4,COLOR_WHITE,COLOR_CYAN); //command
-        init_pair(5,COLOR_YELLOW,COLOR_GREEN);  //command_cmd
+        init_pair(5,COLOR_MAGENTA,COLOR_CYAN);  //command_cmd
         init_pair(6,COLOR_WHITE,COLOR_RED); //main_win
         init_pair(7,COLOR_MAGENTA,COLOR_CYAN); //status_win
-        init_pair(8,COLOR_WHITE,COLOR_GREEN); // status_win_status
+        init_pair(8,COLOR_GREEN,COLOR_WHITE); // status_win_status
+        init_pair(9,COLOR_GREEN,COLOR_RED);
+        init_pair(10,COLOR_YELLOW,COLOR_RED);
+        init_pair(11,COLOR_MAGENTA,COLOR_RED);
         // setup_pair(1, main_config->title_bg, main_config->title_fg);
         // setup_pair(2, main_config->title_bg_voom, main_config->title_fg_voom);
         // setup_pair(3, main_config->side_bg, main_config->side_fg);
@@ -318,7 +280,7 @@ if(has_colors()){
         init_pair(5,COLOR_WHITE,COLOR_BLUE);
         init_pair(6,COLOR_WHITE,COLOR_BLACK);
         init_pair(7,COLOR_WHITE,COLOR_BLACK);
-        init_pair(8,COLOR_MAGENTA,COLOR_GREEN);
+        init_pair(8,COLOR_GREEN,COLOR_WHITE);
     }
 }else
     cmd_info->has_colors = false;
@@ -329,6 +291,8 @@ if(has_colors()){
 void title_setup(Window *title) {
     wattron(title->window, COLOR_PAIR(1));
     wbkgd(title->window, COLOR_PAIR(1));
+    wnoutrefresh(title->window);
+    int voom_width = 6;
     title->has_subs = true;
     title->num_subs = (cmd_info->file_no + 1);
     title->subs = calloc(title->num_subs, sizeof(SubWin *));
@@ -343,7 +307,7 @@ void title_setup(Window *title) {
         }
     }
 
-    FILL_SUB_WIN_STRUCT(title, 0, 1, 6, 0, 0);
+    FILL_SUB_WIN_STRUCT(title, 0, 1, voom_width, 0, 0);
     title->subs[0]->window = derwin(title->window, title->subs[0]->coords.height, title->subs[0]->coords.width,
                                     title->subs[0]->coords.start_y, title->subs[0]->coords.start_x);
     if (title->subs[0]->window == NULL) {
@@ -372,8 +336,7 @@ void title_setup(Window *title) {
         doupdate();
         return;
     }
-
-    int width = (COLS - 6) / cmd_info->file_no;
+    int width = ((COLS - voom_width) / (cmd_info->file_no));
     int x = 6;
     for (uint8_t count = 1; count < title->num_subs; count++, x += width) {
         FILL_SUB_WIN_STRUCT(title, count, 1, width, 0, x);
@@ -396,7 +359,7 @@ void title_setup(Window *title) {
 
         mvwprintw(title->subs[count]->window, 0, x, "%s", cmd_info->file_names[file]);
         if (file < title->num_subs - 1) {
-            mvwaddch(title->subs[count]->window, 0, width, '|');
+            mvwaddch(title->subs[count]->window, 0, (width - 1), '|');
         }
 
         wnoutrefresh(title->subs[count]->window);
@@ -471,9 +434,10 @@ void command_setup(Window *cmd) {
         return;
     }
 
-    wattron(cmd->subs[0]->window, COLOR_PAIR(5));
+    wattron(cmd->subs[0]->window, COLOR_PAIR(5) | A_BOLD);
     wbkgd(cmd->subs[0]->window, COLOR_PAIR(5));
     wnoutrefresh(cmd->subs[0]->window); // Update the subwindow without immediate refresh
+    wattroff(cmd->subs[0]->window, COLOR_PAIR(5) | A_BOLD);
 
     FILL_SUB_WIN_STRUCT(cmd, 1, 1, COLS - 7, LINES - 1, 7);
     cmd->subs[1]->window = subwin(cmd->window, cmd->subs[1]->coords.height, cmd->subs[1]->coords.width,
@@ -489,74 +453,190 @@ void command_setup(Window *cmd) {
 
 void status_setup(Window *status) {
     int y = LINES - 2;
+    int available_width = COLS;
 
     wattron(status->window, COLOR_PAIR(7));
     wbkgd(status->window, COLOR_PAIR(7));
     status->has_subs = true;
-    status->num_subs = 4;
-    status->subs = calloc(status->num_subs, sizeof(SubWin *));
-    if (status->subs == NULL) {
-        log_error("status->subs: memory allocation failed");
-        return;
-    }
+    status->num_subs = 0; // Initialize to 0, as we'll add subwindows dynamically
 
-    for (uint8_t i = 0; i < status->num_subs; i++) {
-        status->subs[i] = calloc(1, sizeof(SubWin));
-        if (status->subs[i] == NULL) {
-            log_error("status->subs[%d]: could not allocate memory", i);
-            return;
+    int mode_width = 10;
+    int cursor_position_width = 14;
+    int unchanging_variables_width = 30;
+    int time_width = 8;
+
+    do {
+        // Condition for available_width < 35
+        if (available_width < 35) {
+            status->num_subs = 2;
+            status->subs = calloc(status->num_subs, sizeof(SubWin *));
+            if (status->subs == NULL) {
+                log_error("status->subs: memory allocation failed");
+                return;
+            }
+
+            for (uint8_t i = 0; i < status->num_subs; i++) {
+                status->subs[i] = calloc(1, sizeof(SubWin));
+                if (status->subs[i] == NULL) {
+                    log_error("status->subs[%d]: could not allocate memory", i);
+                    return;
+                }
+            }
+
+            // Mode subwin
+            FILL_SUB_WIN_STRUCT(status, 0, 1, mode_width, y, 0);
+            status->subs[0]->window = subwin(status->window, status->subs[0]->coords.height, status->subs[0]->coords.width,
+                                             status->subs[0]->coords.start_y, status->subs[0]->coords.start_x);
+            if (status->subs[0]->window == NULL) {
+                log_error("status->subs[0]: could not inilize the window");
+                return;
+            }
+
+            wattron(status->subs[0]->window, COLOR_PAIR(8));
+            wbkgd(status->subs[0]->window, COLOR_PAIR(8));
+            mvwprintw(status->subs[0]->window, 0, 0, "%s", cmd_info->mode);
+            wnoutrefresh(status->subs[0]->window); // Update the subwindow without immediate refresh
+
+            // Time subwin
+            FILL_SUB_WIN_STRUCT(status, 1, 1, time_width, y, COLS - time_width);
+            status->subs[1]->window = subwin(status->window, status->subs[1]->coords.height, status->subs[1]->coords.width,
+                                             status->subs[1]->coords.start_y, status->subs[1]->coords.start_x);
+            if (status->subs[1]->window == NULL) {
+                log_error("status->subs[1]: could not inilize the window");
+                return;
+            }
+
+            mvwprintw(status->subs[1]->window, 0, 0, "%s", "00:00");
+            wnoutrefresh(status->subs[1]->window); // Update the subwindow without immediate refresh
         }
-    }
 
-    // Mode subwin
-    FILL_SUB_WIN_STRUCT(status, 0, 1, 7, y, 0);
-    status->subs[0]->window = subwin(status->window, status->subs[0]->coords.height, status->subs[0]->coords.width,
-                                     status->subs[0]->coords.start_y, status->subs[0]->coords.start_x);
-    if (status->subs[0]->window == NULL) {
-        log_error("status->subs[0]: could not inilize the window");
-        return;
-    }
+        // Condition for 35 <= available_width < 67
+        else if (IN_RANGE(available_width, 35, 67)) {
+            status->num_subs = 3;
+            status->subs = calloc(status->num_subs, sizeof(SubWin *));
+            if (status->subs == NULL) {
+                log_error("status->subs: memory allocation failed");
+                return;
+            }
 
-    wattron(status->subs[0]->window, COLOR_PAIR(8));
-    wbkgd(status->subs[0]->window, COLOR_PAIR(8));
-    mvwprintw(status->subs[0]->window, 0, 0, "%s", cmd_info->mode);
-    wnoutrefresh(status->subs[0]->window); // Update the subwindow without immediate refresh
+            for (uint8_t i = 0; i < status->num_subs; i++) {
+                status->subs[i] = calloc(1, sizeof(SubWin));
+                if (status->subs[i] == NULL) {
+                    log_error("status->subs[%d]: could not allocate memory", i);
+                    return;
+                }
+            }
 
-    // Time subwin
-    FILL_SUB_WIN_STRUCT(status, 1, 1, 8, y, COLS - 8);
-    status->subs[1]->window = subwin(status->window, status->subs[1]->coords.height, status->subs[1]->coords.width,
-                                     status->subs[1]->coords.start_y, status->subs[1]->coords.start_x);
-    if (status->subs[1]->window == NULL) {
-        log_error("status->subs[1]: could not inilize the window");
-        return;
-    }
+            // Mode subwin
+            FILL_SUB_WIN_STRUCT(status, 0, 1, mode_width, y, 0);
+            status->subs[0]->window = subwin(status->window, status->subs[0]->coords.height, status->subs[0]->coords.width,
+                                             status->subs[0]->coords.start_y, status->subs[0]->coords.start_x);
+            if (status->subs[0]->window == NULL) {
+                log_error("status->subs[0]: could not inilize the window");
+                return;
+            }
 
-    mvwprintw(status->subs[1]->window, 0, 0, "%s", "00:00");
-    wnoutrefresh(status->subs[1]->window); // Update the subwindow without immediate refresh
+            wattron(status->subs[0]->window, COLOR_PAIR(8));
+            wbkgd(status->subs[0]->window, COLOR_PAIR(8));
+            mvwprintw(status->subs[0]->window, 0, 0, "%s", cmd_info->mode);
+            wnoutrefresh(status->subs[0]->window); // Update the subwindow without immediate refresh
 
-    // Cursor position subwin
-    FILL_SUB_WIN_STRUCT(status, 2, 1, 22, y, 14);
-    status->subs[2]->window = subwin(status->window, status->subs[2]->coords.height, status->subs[2]->coords.width,
-                                     status->subs[2]->coords.start_y, status->subs[2]->coords.start_x);
-    if (status->subs[2]->window == NULL) {
-        log_error("status->subs[2]: could not inilize the window");
-        return;
-    }
+            // Time subwin
+            FILL_SUB_WIN_STRUCT(status, 1, 1, time_width, y, COLS - time_width);
+            status->subs[1]->window = subwin(status->window, status->subs[1]->coords.height, status->subs[1]->coords.width,
+                                             status->subs[1]->coords.start_y, status->subs[1]->coords.start_x);
+            if (status->subs[1]->window == NULL) {
+                log_error("status->subs[1]: could not inilize the window");
+                return;
+            }
 
-    mvwprintw(status->subs[2]->window, 0, 0, "line %d, col %d", 0, 0);
-    wnoutrefresh(status->subs[2]->window); // Update the subwindow without immediate refresh
+            mvwprintw(status->subs[1]->window, 0, 0, "%s", "00:00");
+            wnoutrefresh(status->subs[1]->window); // Update the subwindow without immediate refresh
 
-    // Unchanging variables subwin
-    FILL_SUB_WIN_STRUCT(status, 3, 1, 30, y, 37);
-    status->subs[3]->window = subwin(status->window, status->subs[3]->coords.height, status->subs[3]->coords.width,
-                                     status->subs[3]->coords.start_y, status->subs[3]->coords.start_x);
-    if (status->subs[3]->window == NULL) {
-        log_error("status->subs[3]: could not inilize the window");
-        return;
-    }
+            // Cursor position subwin
+            int start_x = (((COLS - (time_width + mode_width)) / 2) - (cursor_position_width / 2)) + mode_width;
+            FILL_SUB_WIN_STRUCT(status, 2, 1, cursor_position_width, y, start_x);
+            status->subs[2]->window = subwin(status->window, status->subs[2]->coords.height, status->subs[2]->coords.width,
+                                             status->subs[2]->coords.start_y, status->subs[2]->coords.start_x);
+            if (status->subs[2]->window == NULL) {
+                log_error("status->subs[2]: could not inilize the window");
+                return;
+            }
 
-    mvwprintw(status->subs[3]->window, 0, 0, "Tab space %d %s %s", 4, "ASCII", "TXT");
-    wnoutrefresh(status->subs[3]->window); // Update the subwindow without immediate refresh
+            mvwprintw(status->subs[2]->window, 0, 0, "ln %d, col %d", 0, 0);
+            wnoutrefresh(status->subs[2]->window); // Update the subwindow without immediate refresh
+        }
+
+        // Condition for available_width >= 67
+        else if (available_width > 67) {
+            status->num_subs = 4;
+            status->subs = calloc(status->num_subs, sizeof(SubWin *));
+            if (status->subs == NULL) {
+                log_error("status->subs: memory allocation failed");
+                return;
+            }
+
+            for (uint8_t i = 0; i < status->num_subs; i++) {
+                status->subs[i] = calloc(1, sizeof(SubWin));
+                if (status->subs[i] == NULL) {
+                    log_error("status->subs[%d]: could not allocate memory", i);
+                    return;
+                }
+            }
+
+            // Mode subwin
+            FILL_SUB_WIN_STRUCT(status, 0, 1, mode_width, y, 0);
+            status->subs[0]->window = subwin(status->window, status->subs[0]->coords.height, status->subs[0]->coords.width,
+                                             status->subs[0]->coords.start_y, status->subs[0]->coords.start_x);
+            if (status->subs[0]->window == NULL) {
+                log_error("status->subs[0]: could not inilize the window");
+                return;
+            }
+
+            wattron(status->subs[0]->window, COLOR_PAIR(8));
+            wbkgd(status->subs[0]->window, COLOR_PAIR(8));
+            mvwprintw(status->subs[0]->window, 0, 0, "%s", cmd_info->mode);
+            wnoutrefresh(status->subs[0]->window); // Update the subwindow without immediate refresh
+
+            // Time subwin
+            FILL_SUB_WIN_STRUCT(status, 1, 1, time_width, y, COLS - time_width);
+            status->subs[1]->window = subwin(status->window, status->subs[1]->coords.height, status->subs[1]->coords.width,
+                                             status->subs[1]->coords.start_y, status->subs[1]->coords.start_x);
+            if (status->subs[1]->window == NULL) {
+                log_error("status->subs[1]: could not inilize the window");
+                return;
+            }
+
+            mvwprintw(status->subs[1]->window, 0, 0, "%s", "00:00");
+            wnoutrefresh(status->subs[1]->window); // Update the subwindow without immediate refresh
+
+            int pudding = cursor_position_width + 5;
+            // Cursor position subwin
+            FILL_SUB_WIN_STRUCT(status, 2, 1, cursor_position_width, y, pudding);
+            status->subs[2]->window = subwin(status->window, status->subs[2]->coords.height, status->subs[2]->coords.width,
+                                             status->subs[2]->coords.start_y, status->subs[2]->coords.start_x);
+            if (status->subs[2]->window == NULL) {
+                log_error("status->subs[2]: could not inilize the window");
+                return;
+            }
+
+            mvwprintw(status->subs[2]->window, 0, 0, "ln %d, col %d", 0, 0);
+            wnoutrefresh(status->subs[2]->window); // Update the subwindow without immediate refresh
+
+            // Unchanging variables subwin
+            int start_x = (((COLS - (time_width + mode_width + pudding)) / 2) - (unchanging_variables_width / 2)) + (mode_width + pudding);
+            FILL_SUB_WIN_STRUCT(status, 3, 1, unchanging_variables_width, y, start_x);
+            status->subs[3]->window = subwin(status->window, status->subs[3]->coords.height, status->subs[3]->coords.width,
+                                             status->subs[3]->coords.start_y, status->subs[3]->coords.start_x);
+            if (status->subs[3]->window == NULL) {
+                log_error("status->subs[3]: could not inilize the window");
+                return;
+            }
+
+            mvwprintw(status->subs[3]->window, 0, 0, "  Tab_space %d | %s | %s  ", 4, "ASCII", "TXT");
+            wnoutrefresh(status->subs[3]->window); // Update the subwindow without immediate refresh
+        }
+    } while (0); // This loop executes only once
 
     wnoutrefresh(status->window); // Update the parent window without immediate refresh
     doupdate(); // Refresh the screen with all updates
@@ -564,12 +644,13 @@ void status_setup(Window *status) {
     wattroff(status->window, COLOR_PAIR(7));
 }
 
-
 PRIVATE void display_setup(Window *windows){
     title_setup(&windows[TITLE]);
     sidebar_setup(&windows[SIDE], &windows[SCROOL], cmd_info->display_line_numbers);
     status_setup(&windows[STATUS]);
     command_setup(&windows[CMD]);
+    wbkgd(windows[MAIN].window, COLOR_PAIR(6));
+    wrefresh(windows[MAIN].window);
 
     return;
 
@@ -596,7 +677,6 @@ void setup_screen(Window *windows, bool display_line_numbers, int win_num) {
     for (int i = 0; i < win_num; i++) {
         windows[i].window = newwin(windows[i].coords.height, windows[i].coords.width,
                                    windows[i].coords.start_y, windows[i].coords.start_x);
-        printf("%d window created,",i);
         if (windows[i].window == NULL) {
             log_error("could not create the window %d", i);
         }
@@ -606,8 +686,11 @@ void setup_screen(Window *windows, bool display_line_numbers, int win_num) {
 
 PUBLIC int start_display_processes(){
     terminal_start();
-       init_config();
-    setup_color_display(config);
+    if(!cmd_info->already_active)
+        init_config();
+
+    cmd_info->already_active = true;
+    setup_color_display( );
     int win_num = WIN_NUM;
     cmd_info->display_line_numbers = true;
     
@@ -624,7 +707,6 @@ PUBLIC int start_display_processes(){
     
     setup_screen(windows,cmd_info->display_line_numbers,win_num);
     display_setup(windows);
-    //if(cmd_info->resize_param == true);
     return EXIT_SUCCESS;
 }
 

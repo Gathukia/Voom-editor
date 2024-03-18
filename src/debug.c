@@ -16,28 +16,21 @@ static size_t log_file_size = 0;
 
 void set_log_level(LogLevel level) {
     pthread_mutex_lock(&log_mutex);
-    printf("debug 1");
     current_log_level = level;
     pthread_mutex_unlock(&log_mutex);
 }
 
 void log_message(const char* file, int line, LogLevel level, const char* format, ...) {
     pthread_mutex_lock(&log_mutex);
-    printf("debug 2");
     if (level < current_log_level) {
-         printf("debug 3");
         pthread_mutex_unlock(&log_mutex);
         return;
     }
-     printf("debug 4");
 
-    if (!log_file_opened) {
-         printf("debug 2");
+    if (!log_file_opened){
         log_file = fopen(LOG_FILE, "w");
-        printf("opened file %s\n",LOG_FILE);
         if (log_file == NULL) {
             pthread_mutex_unlock(&log_mutex);
-            printf("w2 opened file %s\n",LOG_FILE);
             return;
         }
         log_file_opened = true;

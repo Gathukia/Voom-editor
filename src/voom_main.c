@@ -34,6 +34,7 @@ exit(0);
 int setting_up(INFO *cmd_info, Handle **file_handle){
     char ch;
     start_display_processes();
+    ch = wgetch(windows_info[MAIN].window);
     if(cmd_info->any_files == true){
         edit_files(file_handle);
     }else{
@@ -57,11 +58,14 @@ return EXIT_SUCCESS;
 
 bool append_file(INFO *file_info, const char* filename, uint8_t slot) {
     if (file_exists(filename)) {
-        file_info->any_files = true;
         strcpy(cmd_info->file_names[slot], filename);
-        file_info->file_no = slot;
+        if(file_info->any_files == false)
+            file_info->file_no = 1;
+        else
+            file_info->file_no++;
+
         return true;
-    } else {
+        }else {
         printf("Error: Could not open file [%s]: %d\n", filename, errno);
         return false;
     }
@@ -75,10 +79,8 @@ int main(int argc, char **argv) {
     //debugging setup
     set_log_level(LOG_LEVEL_ERROR);
 
-    log_error("Failed to open file: %s", "example.txt");
-
     //load configuration file;
-    config = parse_config("main.config");
+    config = parse_config("config/main.config");
     if(config == NULL)printf("load configuration error");
 
     /* Check for UTF-8 support by terminal */
@@ -201,9 +203,8 @@ int main(int argc, char **argv) {
             }
         }
     }
-    Handle *file_handle = NULL;
-    setting_up(cmd_info, &file_handle);
-
+Handle *file_handle = NULL;
+setting_up(cmd_info, &file_handle);
     // if (cmd_info->any_files) {
     //     Handle *file_handle = NULL;
     //     for (int j = 0, i = 1; j != cmd_info->file_no; j++) {

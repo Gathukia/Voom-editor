@@ -56,6 +56,8 @@
 
 #endif /* LOG_H */
 
+#define IN_RANGE(x, min, max)  ((x) >= (min)) && ((x) <= (max))
+#define OUT_RANGE(x, min, max) ((x) < (min)) || ((x) > (max))
 #define arg_max 10
 #define arg_length 255
 
